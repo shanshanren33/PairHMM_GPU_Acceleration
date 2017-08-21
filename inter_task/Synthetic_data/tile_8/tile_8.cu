@@ -7,7 +7,8 @@
 	#include <stdint.h>
 	#include <math.h>
 	#include <unistd.h>
-	#include <omp.h>	
+	#include <omp.h>
+	#include <algorithm>
 	using namespace std;
 
 	// 8 byte.   how to be 128byte?
@@ -515,6 +516,17 @@ int haplotype_size;
 char haplotype_base[500];
 };
 
+bool operator<(const InputData &a, const InputData &b)
+{
+ //   return x.point_value > y.point_value;
+        if(a.read_size<b.read_size) return true;
+        if(a.read_size==b.read_size) return a.haplotype_size<b.haplotype_size;
+        else
+        return false;
+
+}
+
+
 int main(int argc, char * argv[])
 {
 		//printf("input value of size_each_for \n");
@@ -614,6 +626,8 @@ int main(int argc, char * argv[])
 			}
 			clock_gettime(CLOCK_MONOTONIC_RAW,&finish);
 			read_time+=diff(start,finish);
+				
+			
 			
 			size=fakesize;
    			float * result_h=(float *) malloc(sizeof(float)*size);
@@ -635,7 +649,7 @@ int main(int argc, char * argv[])
 			clock_gettime(CLOCK_MONOTONIC_RAW,&start_total); 
 			char * data_h_total;
 					
-			
+			std::sort(inputdata, inputdata+size);
 
 			clock_gettime(CLOCK_MONOTONIC_RAW,&start); 
 			//32 one chunck.
